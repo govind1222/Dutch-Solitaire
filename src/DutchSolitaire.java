@@ -15,6 +15,7 @@ import javax.swing.JPanel;
 
 import javax.imageio.ImageIO;
 import java.io.File;
+import java.util.Objects;
 
 public class DutchSolitaire {
     public static void main(String... args) {
@@ -49,7 +50,6 @@ class MyPanel extends JPanel implements MouseListener {
         setSize(1200, 600);
         setVisible(true);
         addMouseListener(this);
-        System.out.println(filePath.length());
         //loads the variables and starts the game
         load();
     }
@@ -59,14 +59,14 @@ class MyPanel extends JPanel implements MouseListener {
         one = two = null;
         firstCardSelected = secondCardSelected = false;
         imageHolder = new Card[4][14];
-        files = new ArrayList<>(Arrays.asList(new File(filePath).listFiles()));
+        files = new ArrayList<>(Arrays.asList(Objects.requireNonNull(new File(filePath).listFiles())));
         Collections.shuffle(files);
         generateAces(); //loads in aces in the last column
         int index = 0;
         for (int r = 0; r < imageHolder.length; r++) {
             for (int c = 0; c < imageHolder[r].length - 1; c++) {
                 if (index < files.size() && imageHolder[r][c] == null) {
-                    imageHolder[r][c] = new Card(files.get(index).getAbsolutePath(), new Point(r, c));
+                    imageHolder[r][c] = new Card(files.get(index).getName(), new Point(r, c));
                     index++;
                 }
             }
@@ -85,7 +85,7 @@ class MyPanel extends JPanel implements MouseListener {
     private void highLightCard(Graphics g) {
         if (firstCardSelected) {
             BufferedImage img;
-            img = loadFile(new File(one.getCardType()));
+            img = loadFile(new File("res\\CardImages\\" + one.getCardType()));
             g.drawImage(img, 1050, 150, null);
         } else g.drawImage(null, 1050, 150, null);
     }
@@ -109,7 +109,7 @@ class MyPanel extends JPanel implements MouseListener {
         int xStart = 0, yStart = 0;
         for (Card[] arr : imageHolder) {
             for (Card x : arr) {
-                BufferedImage curr = loadFile(new File(x.getCardType()));
+                BufferedImage curr = loadFile(new File("res\\CardImages\\" + x.getCardType()));
                 if (curr != null) {
                     g.drawImage(curr, xStart, yStart, null);
                     xStart += CARDWIDTH;
@@ -138,7 +138,7 @@ class MyPanel extends JPanel implements MouseListener {
         for (int r = 0; r < imageHolder.length; r++) {
             if (index < acesCards.length) {
                 File ace = new File(filePath + acesCards[index]);
-                imageHolder[r][13] = new Card(ace.getAbsolutePath(), new Point(r, 13));
+                imageHolder[r][13] = new Card(ace.getName(), new Point(r, 13));
                 index++;
             }
         }
@@ -153,8 +153,6 @@ class MyPanel extends JPanel implements MouseListener {
             two.setCardType(cardTypeOne);
         }
         firstCardSelected = secondCardSelected = false;
-        one = null;
-        two = null;
     }
 
     //checks whether the two cards selected can be swapped according to a set of rules
@@ -206,7 +204,7 @@ class MyPanel extends JPanel implements MouseListener {
             int indexY = (xCoord - (xCoord % CARDWIDTH)) / CARDWIDTH;
             if (firstCardSelected) {
                 two = imageHolder[indexX][indexY];
-                secondCardSelected = firstCardSelected;
+                secondCardSelected = true;
             } else {
                 one = imageHolder[indexX][indexY];
                 firstCardSelected = true;
