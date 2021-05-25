@@ -137,7 +137,7 @@ class MyPanel extends JPanel implements MouseListener {
         int index = 0;
         for (int r = 0; r < imageHolder.length; r++) {
             if (index < acesCards.length) {
-                File ace = new File(filePath + acesCards[index]);
+                File ace = new File(acesCards[index]);
                 imageHolder[r][13] = new Card(ace.getName(), new Point(r, 13));
                 index++;
             }
@@ -155,16 +155,19 @@ class MyPanel extends JPanel implements MouseListener {
         firstCardSelected = secondCardSelected = false;
     }
 
-    //checks whether the two cards selected can be swapped according to a set of rules
+    // checks whether the two cards selected can be swapped according to a set of rules
     private boolean checkValid(Card one, Card two) {
-        if (one.getCardNumber() != 15 && two.getCardNumber() != 15) {
+        if (one.getCardNumber() != 15 && two.getCardNumber() != 15) { // one has to be a blank card
             return false;
-        } else if (one.getCardNumber() == 14 || two.getCardNumber() == 14) {
+        } else if (one.getCardNumber() == 14 || two.getCardNumber() == 14) { // can't be an ace card
             return false;
-        } else if ((one.getCardType().contains("2") || two.getCardType().contains("2"))) {
+        } else if ((one.getCardType().contains("2") && !one.getCardType().contains("12"))
+                || (two.getCardType().contains("2") && !two.getCardType().contains("12")) ) { // one of them has face value 2
             if ((one.getPoint().x == 0 || two.getPoint().x == 0))
                 return true;
         } else {
+            // make sure its either a left-order or right-order swap
+            // explained in README
             if (one.getCardType().contains("15")) {
                 return validAdjacentCard(one, two);
             } else {
@@ -174,12 +177,13 @@ class MyPanel extends JPanel implements MouseListener {
         return true;
     }
 
-    //checks whether the cards adjacent to the blank
+    // checks whether the cards adjacent to the blank
+    // compare is always the blank card
     private boolean validAdjacentCard(Card compare, Card ref) {
         int indexX = compare.getPoint().x, indexY = compare.getPoint().y;
         int valueOfCard = ref.getCardNumber();
         String cardFace = ref.getCardFace();
-        System.out.println(cardFace);
+        //System.out.println(cardFace);
         if (indexY - 1 >= 0) {
             Card check = imageHolder[indexX][indexY - 1];
             int valueCheck = check.getCardNumber();
