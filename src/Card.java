@@ -18,14 +18,7 @@ class Card{
 
     //returns card number
     public int getCardNumber(){
-        int number = 0;
-        try{
-            number = Integer.parseInt(getCardType().substring(58,60)); //2 digit card number
-        }catch(Exception e){
-            number = Integer.parseInt(getCardType().substring(58,59)); //one digit
-        }finally {
-            return number;
-        }
+        return Integer.parseInt(cardType.replaceAll("\\D+", ""));
     }
 
     //returns the point which contains the index of the card
@@ -35,7 +28,8 @@ class Card{
 
     //returns cardType
     public String getCardFace(){
-        return cardType.substring(60, cardType.length() - 4);
+        //System.out.println(cardType);
+        return cardType.replaceAll("[^A-Za-z.]+", "").replace(".gif", "");
     }
 
     //sets cardType
